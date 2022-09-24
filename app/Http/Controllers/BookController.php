@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class BookController extends Controller
 {
-	public function store(Request $request): Response
+	public function store(Request $request): RedirectResponse
 	{
 		$validated_data = $request->validate(
 			[
@@ -17,15 +17,12 @@ class BookController extends Controller
 			],
 		);
 
-		Book::create($validated_data);
+		$book = Book::create($validated_data);
 
-		return response(
-			'success',
-			Response::HTTP_OK
-		);
+		return redirect($book->path());
 	}
 
-	public function update(Request $request, Book $book): Response
+	public function update(Request $request, Book $book): RedirectResponse
 	{
 		$validated_data = $request->validate(
 			[
@@ -36,9 +33,13 @@ class BookController extends Controller
 
 		$book->update($validated_data);
 
-		return response(
-			'success',
-			Response::HTTP_OK
-		);
+		return redirect($book->path());
+	}
+
+	public function destroy(Book $book): RedirectResponse
+	{
+		$book->delete();
+
+		return redirect('/books');
 	}
 }

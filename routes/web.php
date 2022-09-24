@@ -2,10 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\AuthorController;
 
 Route::get('/', function () {
-  return view('welcome');
+	return view('welcome');
 });
 
-Route::post('/books', [BookController::class, 'store']);
-Route::put('/books/{book}', [BookController::class, 'update']);
+Route::resource('books', BookController::class)
+	->except(['create', 'edit']);
+Route::resource('authors', AuthorController::class)
+	->except(['create', 'edit']);
