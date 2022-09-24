@@ -5,6 +5,7 @@ namespace Tests\Feature;
 // use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Book;
+use App\Models\Author;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class BookCRUDTest extends TestCase
@@ -15,7 +16,7 @@ class BookCRUDTest extends TestCase
 	{
 		$response = $this->post('/books', [
 			'title' => 'Cool Book Title',
-			'author' => 'Victor',
+			'author_id' => 'Victor',
 		]);
 
 		$book = Book::latest()->first();
@@ -28,7 +29,7 @@ class BookCRUDTest extends TestCase
 	{
 		$response = $this->post('/books', [
 			'title' => '',
-			'author' => 'Victor',
+			'author_id' => 'Victor',
 		]);
 
 		$response->assertSessionHasErrors('title');
@@ -38,28 +39,50 @@ class BookCRUDTest extends TestCase
 	{
 		$response = $this->post('/books', [
 			'title' => 'Cool Book Title',
-			'author' => '',
+			'author_id' => '',
 		]);
 
-		$response->assertSessionHasErrors('author');
+		$response->assertSessionHasErrors('author_id');
 	}
+
+	/** @test */
+	public function test_add_author_automatically()
+	{
+		$this->post('/books', [
+			'title' => 'Cool Title',
+			'author_id' => 'Victor',
+		]);
+
+		$book = Book::latest()->first();
+		$author = Author::latest()->first();
+
+		$this->assertCount(1, Author::all());
+		$this->assertEquals($author->id, $book->author_id);
+	}
+
 
 	public function test_update_book()
 	{
 		$this->post('/books', [
 			'title' => 'Cool Book Title',
-			'author' => 'Victor',
+			'author_id' => 'Victor',
 		]);
 
 		$book = Book::latest()->first();
+		$author = Author::latest()->first();
+
+		$this->assertCount(1, Author::all());
+		$this->assertEquals($author->id, $book->author_id);
 
 		$response = $this->put($book->path(), [
 			'title' => 'New Cool Book Title',
-			'author' => 'New Victor',
+			'author_id' => 'New Victor',
 		]);
 
+		$author = Author::latest()->first();
+		$this->assertEquals($author->id, $book->author_id);
+
 		$this->assertEquals('New Cool Book Title', Book::first()?->title);
-		$this->assertEquals('New Victor', Book::first()?->author);
 
 		$response->assertRedirect($book->fresh()->path());
 	}
@@ -68,7 +91,7 @@ class BookCRUDTest extends TestCase
 	{
 		$this->post('/books', [
 			'title' => 'Cool Book Title',
-			'author' => 'Victor',
+			'author_id' => 'Victor',
 		]);
 
 		$book = Book::latest()->first();

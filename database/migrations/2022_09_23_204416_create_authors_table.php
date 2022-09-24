@@ -11,7 +11,7 @@ return new class extends Migration
 		Schema::create('authors', function (Blueprint $table) {
 			$table->id();
 			$table->string('name');
-			$table->timestamp('dob');
+			$table->timestamp('dob')->nullable();
 			$table->timestamps();
 		});
 	}

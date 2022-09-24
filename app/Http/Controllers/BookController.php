@@ -13,7 +13,7 @@ class BookController extends Controller
 		$validated_data = $request->validate(
 			[
 				'title' => 'required|string',
-				'author' => 'required|string',
+				'author_id' => 'required|string',
 			],
 		);
 
@@ -27,7 +27,7 @@ class BookController extends Controller
 		$validated_data = $request->validate(
 			[
 				'title' => 'required|string',
-				'author' => 'required|string',
+				'author_id' => 'required|string',
 			],
 		);
 
